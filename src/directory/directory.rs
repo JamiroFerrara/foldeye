@@ -1,5 +1,7 @@
 use crate::directory::*;
 use rayon::prelude::*;
+use std::hash::{Hash, Hasher};
+use differ::{Differ, Tag, Span};
 use std::fs;
 
 #[derive(Debug)]
@@ -71,7 +73,37 @@ impl Directory {
             })
             .collect()
     }
+
+    pub fn compare(&self, other: &Directory) -> Vec<Span> {
+        let self_files = self.all_files();
+        let other_files = other.all_files();
+
+        let differ = Differ::new(&self_files, &other_files);
+        for span in differ.spans() {
+            match span.tag {
+                Tag::Equal => (),
+                Tag::Insert=> (),
+                Tag::Delete => (),
+                Tag::Replace => (),
+            }
+        }
+
+        differ.spans()
+    } 
 }
+
+impl<'a> Hash for Directory {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
+}
+
+impl PartialEq for Directory {
+    fn eq(&self, other: &Directory) -> bool {
+        self.name == other.name // MUST use same data as Hash
+    }
+}
+impl Eq for Directory {}
 
 fn get_entries(path: &str) -> Result<Vec<Entry>, std::io::Error> {
     let read_dir = fs::read_dir(path)?;

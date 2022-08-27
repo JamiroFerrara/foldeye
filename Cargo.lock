@@ -205,6 +205,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "differ"
+version = "1.0.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e315f24d746768bf0339f3497cd067968296608c4334bc29860f2a0adc419c7"
+dependencies = [
+ "fnv",
+]
+
+[[package]]
 name = "either"
 version = "1.8.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -218,6 +227,12 @@ checksum = "d9435d864e017c3c6afeac1654189b06cdb491cf2ff73dbf0d73b0f292f42ff8"
 dependencies = [
  "backtrace",
 ]
+
+[[package]]
+name = "fnv"
+version = "1.0.7"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "3f9eec918d3f24069decb9af1554cad7c880e2da24a9afd88aca000531ab82c1"
 
 [[package]]
 name = "getrandom"
@@ -526,6 +541,7 @@ name = "rdrive"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "differ",
  "job_scheduler",
  "rayon",
  "serde",
