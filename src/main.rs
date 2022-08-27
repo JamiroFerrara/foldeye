@@ -1,6 +1,8 @@
 use clap::Parser;
 
 mod directory;
+mod chron;
+
 
 ///Argument parser for the start of the program
 #[derive(Parser, Debug)]
@@ -13,10 +15,6 @@ struct Args {
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
     let args = Args::parse();
-
-    let dir = directory::Directory::new(&args.n)?;
-    let files = dir.all_dirs();
-    println!("{:?}", files);
-
+    chron::start(&args.n);
     Ok(())
 }
