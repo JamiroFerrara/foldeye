@@ -69,6 +69,30 @@ impl Directory {
             })
             .collect()
     }
+
+    pub fn all_files(&self) -> Vec<&String> {
+        self.entries
+            .par_iter()
+            .flat_map(|entry| match entry {
+                Entry::File(file) => vec![&file.name],
+                Entry::Directory(dir) => dir.all_files(),
+            })
+            .collect()
+    }
+
+    pub fn all_dirs(&self) -> Vec<&String> {
+        self.entries
+            .par_iter()
+            .flat_map(|entry| match entry {
+                Entry::File(_) => vec![],
+                Entry::Directory(dir) => {
+                    let mut dirs = vec![&dir.name];
+                    dirs.extend(dir.all_dirs());
+                    dirs
+                }
+            })
+            .collect()
+    }
 }
 
 fn get_entries(path: &str) -> Result<Vec<Entry>, std::io::Error> {
