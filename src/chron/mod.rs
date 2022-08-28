@@ -1,7 +1,7 @@
 extern crate job_scheduler;
 use job_scheduler::*;
 use std::time::Duration;
-
+use differ::{Span, Tag};
 use crate::directory::*;
 
 pub struct Chron {
@@ -26,9 +26,9 @@ impl Chron {
             let dir = Directory::new(path);
             match dir {
                 Ok(d) => {
-                    let diff = self.directory.compare(&d);
-                    println!("{:?}", diff);
-
+                    let spans = &self.directory.compare(&d);
+                    let deleted = self.directory.get_deleted_paths(spans.to_vec());
+                    println!("{:?}", &deleted);
                     self.directory = d;
                 }
                 Err(_) => { }
@@ -41,4 +41,5 @@ impl Chron {
         }
     }
 }
+
 

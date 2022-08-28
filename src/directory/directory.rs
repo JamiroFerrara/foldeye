@@ -82,28 +82,40 @@ impl Directory {
         for span in differ.spans() {
             match span.tag {
                 Tag::Equal => (),
-                Tag::Insert=> (),
-                Tag::Delete => (),
-                Tag::Replace => (),
+                Tag::Insert=> (println!("Item was added!")),
+                Tag::Delete => (println!("Item was deleted!")),
+                Tag::Replace => (println!("Item was replaced!")),
             }
         }
 
         differ.spans()
     } 
-}
 
-impl<'a> Hash for Directory {
-    fn hash<H: Hasher>(&self, state: &mut H) {
-        self.name.hash(state);
+    pub fn get_deleted_paths(&self, spans: Vec<Span>) -> Vec<String> {
+        let mut deleted_paths: Vec<String> = Vec::new();
+        let paths = self.all_files();
+        
+        for span in spans {
+            match span.tag {
+                Tag::Equal => {}
+                Tag::Insert => {},
+                Tag::Delete => {
+                    let range = &paths[span.a_start..span.a_end];
+                    range.iter().for_each(|path| {
+                        deleted_paths.push(path.to_owned().to_string());
+                    });
+
+                    println!("{:?}", range);
+                    println!("{}, {}", span.b_start, span.b_end);
+                }
+                Tag::Replace => {} ,
+            }
+        }
+
+        println!("--------------");
+        deleted_paths
     }
 }
-
-impl PartialEq for Directory {
-    fn eq(&self, other: &Directory) -> bool {
-        self.name == other.name // MUST use same data as Hash
-    }
-}
-impl Eq for Directory {}
 
 fn get_entries(path: &str) -> Result<Vec<Entry>, std::io::Error> {
     let read_dir = fs::read_dir(path)?;
@@ -120,3 +132,16 @@ fn get_entries(path: &str) -> Result<Vec<Entry>, std::io::Error> {
 
     Ok(entries)
 }
+
+impl<'a> Hash for Directory {
+    fn hash<H: Hasher>(&self, state: &mut H) {
+        self.name.hash(state);
+    }
+}
+
+impl PartialEq for Directory {
+    fn eq(&self, other: &Directory) -> bool {
+        self.name == other.name // MUST use same data as Hash
+    }
+}
+impl Eq for Directory {}

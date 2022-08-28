@@ -1,25 +1,37 @@
 use clap::Parser;
+use std::env::*;
 
 mod directory;
 mod chron;
 
-///Argument parser for the start of the program
-#[derive(Parser, Debug)]
-#[clap(author, version, about, long_about = None)]
-struct Args {
-    ///Path to search
-    path: String,
-}
-
-
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    // let args = Args::parse();
-    let path = "./".to_string();
-    let directory = directory::Directory::new(&path.clone())?;
-    let chron_timing = "1/1 * * * * *".to_string();
+    let args = args();
+    let paths = get_paths(args);
+    println!("Starting folder watcher..!");
 
-    chron::Chron::new(path.clone(), chron_timing, directory).watch_folder(&path)?;
+    for path in paths {
+
+        let directory = directory::Directory::new(&path.clone())?;
+        let chron_timing = "1/1 * * * * *".to_string();
+
+            println!("Starting chron watch in path -> {}", path);
+            match chron::Chron::new(path.clone(), chron_timing, directory).watch_folder(&path) {
+                Ok(_) => println!("Folder watcher ended!"),
+                Err(e) => println!("Error: {}", e),
+            }
+    }
 
     Ok(())
+}
+
+fn get_paths(args: std::env::Args) -> Vec<String> {
+    let mut paths = Vec::new();
+    for arg in args {
+        paths.push(arg);
+    }
+
+    //Remove first dummy argument
+    paths.remove(0);
+    paths
 }
