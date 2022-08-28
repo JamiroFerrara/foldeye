@@ -14,8 +14,8 @@ struct Args {
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
-    let args = Args::parse();
-    let path = args.path.clone();
+    // let args = Args::parse();
+    let path = "./".to_string();
     let directory = directory::Directory::new(&path.clone())?;
     let chron_timing = "1/1 * * * * *".to_string();
 
