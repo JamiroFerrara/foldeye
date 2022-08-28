@@ -104,16 +104,33 @@ impl Directory {
                     range.iter().for_each(|path| {
                         deleted_paths.push(path.to_owned().to_string());
                     });
-
-                    println!("{:?}", range);
-                    println!("{}, {}", span.b_start, span.b_end);
                 }
                 Tag::Replace => {} ,
             }
         }
 
-        println!("--------------");
         deleted_paths
+    }
+
+    pub fn get_inserted_paths(&self, spans: Vec<Span>) -> Vec<String> {
+        let mut added_paths: Vec<String> = Vec::new();
+        let paths = self.all_files();
+        
+        for span in spans {
+            match span.tag {
+                Tag::Equal => {}
+                Tag::Insert => {
+                    let range = &paths[span.b_start..span.b_end];
+                    range.iter().for_each(|path| {
+                        added_paths.push(path.to_owned().to_string());
+                    });
+                }
+                Tag::Delete => {} ,
+                Tag::Replace => {} ,
+            }
+        }
+
+        added_paths
     }
 }
 

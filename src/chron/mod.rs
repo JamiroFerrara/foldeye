@@ -27,8 +27,10 @@ impl Chron {
             match dir {
                 Ok(d) => {
                     let spans = &self.directory.compare(&d);
-                    let deleted = self.directory.get_deleted_paths(spans.to_vec());
-                    println!("{:?}", &deleted);
+                    let del = self.directory.get_deleted_paths(spans.to_vec());
+                    let ins = d.get_inserted_paths(spans.to_vec());
+                    println!("{:?}, {:?}", ins, del);
+
                     self.directory = d;
                 }
                 Err(_) => { }
