@@ -20,16 +20,6 @@ impl Directory {
         })
     }
 
-    pub fn count(&self) -> i32 {
-        self.entries
-            .par_iter()
-            .map(|entry| match entry {
-                Entry::File(_) => 1,
-                Entry::Directory(dir) => dir.count(),
-            })
-            .sum()
-    }
-
     pub fn dirs(&self) -> Vec<&String> {
         self.entries
             .par_iter()
@@ -50,16 +40,6 @@ impl Directory {
             .collect()
     }
 
-    pub fn all_files(&self) -> Vec<&String> {
-        self.entries
-            .par_iter()
-            .flat_map(|entry| match entry {
-                Entry::File(file) => vec![&file.name],
-                Entry::Directory(dir) => dir.all_files(),
-            })
-            .collect()
-    }
-
     pub fn all_dirs(&self) -> Vec<&String> {
         self.entries
             .par_iter()
@@ -74,6 +54,16 @@ impl Directory {
             .collect()
     }
 
+    pub fn all_files(&self) -> Vec<&String> {
+        self.entries
+            .par_iter()
+            .flat_map(|entry| match entry {
+                Entry::File(file) => vec![&file.name],
+                Entry::Directory(dir) => dir.all_files(),
+            })
+            .collect()
+    }
+
     pub fn compare(&self, other: &Directory) -> (Vec<String>, Vec<String>){
         let self_files = self.all_files();
         let other_files = other.all_files();
@@ -82,9 +72,9 @@ impl Directory {
         for span in differ.spans() {
             match span.tag {
                 Tag::Equal => (),
-                Tag::Insert=> (println!("Item was added!")),
-                Tag::Delete => (println!("Item was deleted!")),
-                Tag::Replace => (println!("Item was replaced!")),
+                Tag::Insert=> (),
+                Tag::Delete => (),
+                Tag::Replace => (),
             }
         }
 
@@ -147,7 +137,7 @@ fn get_entries(path: &str) -> Result<Vec<Entry>, std::io::Error> {
         if metadata.is_dir() {
             entries.push(Entry::Directory(Directory::new(&entry.path().to_str().unwrap())?));
         } else {
-            entries.push(Entry::File(File::new(&entry.path().to_str().unwrap(), metadata.len() as i32)));
+            entries.push(Entry::File(File::new(&entry.path().to_str().unwrap().replace("\\", "/"), metadata.len() as i32)));
         }
     }
 

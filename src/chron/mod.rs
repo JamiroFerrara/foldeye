@@ -25,7 +25,7 @@ impl Chron {
             let dir = Directory::new(path); //Exp
             match dir {
                 Ok(d) => {
-                    let (inserted, deleted) = &self.directory.compare(&d);
+                    let (_inserted, _deleted) = &self.directory.compare(&d);
                     self.directory = d;
                 }
                 Err(_) => { }
