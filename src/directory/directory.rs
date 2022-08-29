@@ -4,6 +4,13 @@ use std::hash::{Hash, Hasher};
 use differ::{Differ, Tag, Span};
 use std::fs;
 
+#[derive(Debug, Clone)]
+pub struct CompAction {
+    pub inserted: Vec<String>,
+    pub removed: Vec<String>,
+    pub replaced: Vec<String>
+}
+
 #[derive(Debug)]
 pub struct Directory {
     pub name: String,
@@ -64,25 +71,26 @@ impl Directory {
             .collect()
     }
 
-    pub fn compare(&self, other: &Directory) -> (Vec<String>, Vec<String>){
+    pub fn compare(&self, other: &Directory) -> CompAction {
         let self_files = self.all_files();
         let other_files = other.all_files();
 
         let differ = Differ::new(&self_files, &other_files);
-        for span in differ.spans() {
-            match span.tag {
-                Tag::Equal => (),
-                Tag::Insert=> (),
-                Tag::Delete => (),
-                Tag::Replace => (),
-            }
-        }
+        // for span in differ.spans() {
+            // match span.tag {
+                // Tag::Equal => (),
+                // Tag::Insert=> (),
+                // Tag::Delete => (),
+                // Tag::Replace => (),
+            // }
+        // }
 
         let ins = other.get_inserted_paths(differ.spans().to_vec());
         let del = self.get_deleted_paths(differ.spans().to_vec());
-        println!("{:?}, {:?}", ins, del);
+        let rep = self.get_replaced_paths(differ.spans().to_vec());
+        // println!("{:?}, {:?}", ins, del);
 
-        (ins,del)
+        CompAction { inserted: ins, removed: del, replaced: rep, }
     } 
 
     pub fn get_deleted_paths(&self, spans: Vec<Span>) -> Vec<String> {
@@ -104,6 +112,27 @@ impl Directory {
         }
 
         deleted_paths
+    }
+
+    pub fn get_replaced_paths(&self, spans: Vec<Span>) -> Vec<String> {
+        let mut replaced_paths: Vec<String> = Vec::new();
+        let paths = self.all_files();
+        
+        for span in spans {
+            match span.tag {
+                Tag::Equal => {}
+                Tag::Insert => {},
+                Tag::Delete => {} ,
+                Tag::Replace => {
+                    let range = &paths[span.a_start..span.a_end];
+                    range.iter().for_each(|path| {
+                        replaced_paths.push(path.to_owned().to_string());
+                    });
+                }
+            }
+        }
+
+        replaced_paths
     }
 
     pub fn get_inserted_paths(&self, spans: Vec<Span>) -> Vec<String> {

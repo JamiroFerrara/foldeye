@@ -13,9 +13,11 @@ async fn main() -> Result<(), std::io::Error> {
         let chron_timing = "1/1 * * * * *".to_string();
 
         let chron = Chron::new(path.clone(), chron_timing, directory);
-        chron.watch_folder(&path, &|inserted, deleted| {
-            println!("Inserted: {:?}", inserted);
-            println!("Deleted: {:?}", deleted);
+        chron.watch_folder(&path, &|comparison| {
+            let add = comparison.inserted;
+            let rem = comparison.removed;
+            let rep = comparison.replaced;
+
         })?;
     }
 
