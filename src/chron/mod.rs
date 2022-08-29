@@ -18,7 +18,7 @@ impl Chron {
         }
     }
 
-    pub fn watch_folder(mut self, path: &str) -> Result<(), std::io::Error>{
+    pub fn watch_folder(mut self, path: &str, action: &dyn Fn(&Vec<String>, &Vec<String>)) -> Result<(), std::io::Error>{
         let mut scheduler = JobScheduler::new();
 
         scheduler.add(Job::new(self.interval.parse().unwrap(), || {
@@ -26,6 +26,7 @@ impl Chron {
             match dir {
                 Ok(d) => {
                     let (_inserted, _deleted) = &self.directory.compare(&d);
+                    action(_inserted, _deleted);
                     self.directory = d;
                 }
                 Err(_) => { }

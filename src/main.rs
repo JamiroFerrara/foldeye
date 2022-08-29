@@ -12,8 +12,11 @@ async fn main() -> Result<(), std::io::Error> {
         let directory = Directory::new(&path.clone())?;
         let chron_timing = "1/1 * * * * *".to_string();
 
-        println!("Starting ChronJob in path -> {}", path);
-        Chron::new(path.clone(), chron_timing, directory);
+        let chron = Chron::new(path.clone(), chron_timing, directory);
+        chron.watch_folder(&path, &|inserted, deleted| {
+            println!("Inserted: {:?}", inserted);
+            println!("Deleted: {:?}", deleted);
+        })?;
     }
 
     Ok(())
