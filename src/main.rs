@@ -1,7 +1,6 @@
 use std::env::*;
-
-mod directory;
-mod chron;
+use fwatcher::directory::*;
+use fwatcher::chron::*;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
@@ -10,11 +9,11 @@ async fn main() -> Result<(), std::io::Error> {
     println!("Starting folder watcher..!");
 
     for path in paths {
-        let directory = directory::Directory::new(&path.clone())?;
+        let directory = Directory::new(&path.clone())?;
         let chron_timing = "1/1 * * * * *".to_string();
 
         println!("Starting ChronJob in path -> {}", path);
-            let chron = chron::Chron::new(path.clone(), chron_timing, directory);
+            let chron = Chron::new(path.clone(), chron_timing, directory);
             match chron.watch_folder(&path) {
                 Ok(_) => println!("Folder watcher ended!"),
                 Err(e) => println!("Error: {}", e),
