@@ -13,11 +13,7 @@ async fn main() -> Result<(), std::io::Error> {
         let chron_timing = "1/1 * * * * *".to_string();
 
         println!("Starting ChronJob in path -> {}", path);
-            let chron = Chron::new(path.clone(), chron_timing, directory);
-            match chron.watch_folder(&path) {
-                Ok(_) => println!("Folder watcher ended!"),
-                Err(e) => println!("Error: {}", e),
-        }
+        Chron::new(path.clone(), chron_timing, directory);
     }
 
     Ok(())
