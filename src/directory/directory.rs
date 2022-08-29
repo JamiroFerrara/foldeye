@@ -74,7 +74,7 @@ impl Directory {
             .collect()
     }
 
-    pub fn compare(&self, other: &Directory) -> Vec<Span> {
+    pub fn compare(&self, other: &Directory) -> (Vec<String>, Vec<String>){
         let self_files = self.all_files();
         let other_files = other.all_files();
 
@@ -88,7 +88,11 @@ impl Directory {
             }
         }
 
-        differ.spans()
+        let ins = other.get_inserted_paths(differ.spans().to_vec());
+        let del = self.get_deleted_paths(differ.spans().to_vec());
+        println!("{:?}, {:?}", ins, del);
+
+        (ins,del)
     } 
 
     pub fn get_deleted_paths(&self, spans: Vec<Span>) -> Vec<String> {
