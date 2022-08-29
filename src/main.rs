@@ -14,10 +14,13 @@ async fn main() -> Result<(), std::io::Error> {
 
         let chron = Chron::new(path.clone(), chron_timing, directory);
         chron.watch_folder(&path, &|comparison| {
-            let add = comparison.inserted;
-            let rem = comparison.removed;
-            let rep = comparison.replaced;
-
+            for action in comparison.action {
+                match action {
+                    ComparisonActionEnum::Inserted(files) => { println!("Inserted: {:?}", files); }
+                    ComparisonActionEnum::Removed(files) => { println!("Removed: {:?}", files); }
+                    ComparisonActionEnum::Replaced(files) => { println!("Replaced: {:?}", files); }
+                }
+            }
         })?;
     }
 

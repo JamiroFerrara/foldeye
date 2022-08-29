@@ -6,9 +6,14 @@ use std::fs;
 
 #[derive(Debug, Clone)]
 pub struct CompAction {
-    pub inserted: Vec<String>,
-    pub removed: Vec<String>,
-    pub replaced: Vec<String>
+    pub action: Vec<ComparisonActionEnum>,
+}
+
+#[derive(Debug, Clone)]
+pub enum ComparisonActionEnum {
+    Inserted(Vec<String>),
+    Removed(Vec<String>),
+    Replaced(Vec<String>)
 }
 
 #[derive(Debug)]
@@ -74,23 +79,19 @@ impl Directory {
     pub fn compare(&self, other: &Directory) -> CompAction {
         let self_files = self.all_files();
         let other_files = other.all_files();
-
         let differ = Differ::new(&self_files, &other_files);
-        // for span in differ.spans() {
-            // match span.tag {
-                // Tag::Equal => (),
-                // Tag::Insert=> (),
-                // Tag::Delete => (),
-                // Tag::Replace => (),
-            // }
-        // }
 
         let ins = other.get_inserted_paths(differ.spans().to_vec());
         let del = self.get_deleted_paths(differ.spans().to_vec());
         let rep = self.get_replaced_paths(differ.spans().to_vec());
-        // println!("{:?}, {:?}", ins, del);
 
-        CompAction { inserted: ins, removed: del, replaced: rep, }
+        CompAction {
+            action: vec![
+                ComparisonActionEnum::Inserted(ins),
+                ComparisonActionEnum::Removed(del),
+                ComparisonActionEnum::Replaced(rep),
+            ],
+        }
     } 
 
     pub fn get_deleted_paths(&self, spans: Vec<Span>) -> Vec<String> {
