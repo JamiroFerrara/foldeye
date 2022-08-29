@@ -1,6 +1,6 @@
 use std::env::*;
-use fwatcher::directory::*;
-use fwatcher::chron::*;
+use foldeye::directory::*;
+use foldeye::chron::*;
 
 #[tokio::main]
 async fn main() -> Result<(), std::io::Error> {
